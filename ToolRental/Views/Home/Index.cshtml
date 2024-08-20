@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["Title"] = "Početna";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container">
+    <div class="row mb-4">
+        <h1>Upute</h1>
+    </div>
+    <div class="row mb-4">
+        <ul>
+            <li>Alat se rezerervira u wizardu.</li>
+            <li>Prvo se izabere tip alata.</li>
+            <li>Zatim se izabere trajanje najma nako čega se prikaže izračun cijene.</li>
+            <li>Na kraju se prikaže izabrano i potvrdi ili odizbor.</li>
+        </ul>
+    </div>
+    <div class="row mb-lg-2">
+        <div class="col-md-4">
+            <p>Wizard za rezervaciju alata:</p>
+        </div>
+        <div class="col-md-2">
+            @Html.ActionLink("Rezervacija", "Index", "Reservation", null, new { @class="btn btn-primary float-end" })
+        </div>
+    </div>
+    <div class="row mb-lg-2">
+        <div class="col-md-4">
+            <p>Pregled alata u ponudi:</p>
+        </div>
+        <div class="col-md-2">
+            @Html.ActionLink("Ponuda alata", "Index", "ToolOverview", null, new { @class = "btn btn-primary float-end" })
+        </div>
+    </div>
+</div>

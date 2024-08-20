@@ -1,0 +1,188 @@
+﻿@model ToolRental.ViewModels.ReservationViewModel
+@{
+    ViewData["Title"] = "Rezervacija";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container">
+    <div class="row mb-4">
+        <h1>Rezervacija</h1>
+    </div>
+    <div class="row" id="toolSelection">
+        <h3>1. Izbor alata za najam</h3>
+
+        @Html.DropDownListFor(modelItem => modelItem.Tools, Model.ToolsSelectItems, "Izabrati alat", new { @id = "toolDropDown", @class = "select2 col-md-8", @name = "tools" })
+        <div class="invalid-feedback">Izaberite alat za nastavak</div>
+
+        <div class="col-md-12">
+            <button class="btn btn-primary float-end" name="nextStep">Idući korak</button>
+        </div>
+
+    </div>
+
+    <div class="row" id="periodSelection">
+        <h3>2. Parametri najma</h3>
+
+        <div class="row">
+            <div class="col-md-2">
+                Ime alata
+            </div>
+            <div class="col-md-3">
+                @* @Model.SelectedToolName *@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                Opis alata
+            </div>
+            <div class="col-md-3">
+                @* @Model.SelectedToolName *@
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <label for="datetimepickerStartInput" class="form-label">Datum i vrijeme kraja najma</label>
+                <div class="input-group log-event"
+                     id="datetimepickerStart"
+                     data-td-target-input="nearest"
+                     data-td-target-toggle="nearest">
+                    <input id="datetimepickerStartInput"
+                           type="text"
+                           class="form-control"
+                           data-td-target="#datetimepickerStart" />
+                    <span class="input-group-text"
+                          data-td-target="#datetimepickerStart"
+                          data-td-toggle="datetimepicker">
+                        <i class="bi bi-calendar3"></i>
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="datetimepickerEndInput" class="form-label">Datum i vrijeme kraja najma</label>
+                <div class="input-group log-event"
+                     id="datetimepickerEnd"
+                     data-td-target-input="nearest"
+                     data-td-target-toggle="nearest">
+                    <input id="datetimepickerEndInput"
+                           type="datetime"
+                           class="form-control"
+                           data-td-target="#datetimepickerEnd" />
+                    <span class="input-group-text"
+                          data-td-target="#datetimepickerEnd"
+                          data-td-toggle="datetimepicker">
+                        <i class="bi bi-calendar3"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-md-4">
+                <label for="duration">Trajanje u satima</label>
+            </div>
+            <div class="col-md-2">
+                <input class="float-end" name="duration" value="" disabled />
+            </div>
+            <div class="col-md-4">
+                <label for="price">Cijena najma</label>
+            </div>
+            <div class="col-md-2">
+                <input class="float-end" name="price" value="" disabled />
+            </div>
+        </div>
+
+        <div class="col-md-12 mt-5">
+            <button class="btn btn-primary float-start" name="prevStep">Prethodni korak</button>
+            <button class="btn btn-primary float-end" name="nextStep">Idući korak</button>
+        </div>
+
+    </div>
+
+    @* overview *@
+    <div class="row" id="overview">
+        <h3>3. Pregled</h3>
+
+        <div class="col-md-12 mt-5">
+            <button class="btn btn-primary float-start" name="prevStep">Prethodni korak</button>
+            <button class="btn btn-success float-end" name="submit">Rezerviraj</button>
+            @* @Html.ActionLink("Id 2", "Index", "ToolOverview", new { id = 2 }, new { @class = "btn btn-success" }) *@
+        </div>
+
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            // druga dva koraka se skrivaju
+            $("#periodSelection, #overview").hide();
+
+            $(".btn-primary").click(function (e) {
+                e.preventDefault();
+
+                let currentSection = $(this).closest(".row");
+
+                if ($(this).attr("name") === "nextStep") {
+                    let nextSection = currentSection.next(".row");
+                    currentSection.hide();
+                    nextSection.show();
+                }
+                else if ($(this).attr("name") === "prevStep") {
+                    let prevSection = currentSection.prev(".row");
+                    currentSection.hide();
+                    prevSection.show();
+                }
+            });
+
+            $('.select2').select2({
+                placeholder: "Izaberite alat",
+                allowClear: true,
+                minimumInputLength: 3,
+                ajax: {
+                    url: '/Reservation/GetToolDropdownData',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            searchString: params.term,
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: $.map(data, function (item) {
+                                return {
+                                    id: item.id,
+                                    text: item.text
+                                };
+                            })
+                        };
+                    },
+                    cache: true
+                }
+            });
+
+            new tempusDominus.TempusDominus(document.getElementById('datetimepickerStart'), {
+                localization: {
+                    startOfTheWeek: 1,
+                    format: 'yyyy-MM-dd HH:mm',
+                    hourCycle: 'h24'
+                }
+            });
+
+            new tempusDominus.TempusDominus(document.getElementById('datetimepickerEnd'), {
+                localization: {
+                    startOfTheWeek: 1,
+                    format: 'yyyy-MM-dd HH:mm',
+                    hourCycle: 'h24'
+                }
+            });
+
+            $('#datetimepickerStartInput').on('change', () => console.log('change event from #datetimepickerStartInput'));
+        });
+
+
+
+    </script>
+}
