@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace ToolRental.Models
+﻿namespace ToolRental.Models
 {
     public class ToolReservation
     {
@@ -8,7 +6,7 @@ namespace ToolRental.Models
         public DateTime ReservationStart { get; set; }
         public DateTime ReservationEnd { get; set; }
 
-        public ICollection<Tool> RentedTools { get; set; }
-        public ICollection<ToolRenter> ToolRenters { get; set; }
+        public Tool RentedTool { get; set; }
+        public ToolRenter ToolRenter { get; set; }
     }
 }
