@@ -14,6 +14,7 @@ builder.Services.AddDbContext<ToolRentalContext>(options =>
 
 builder.Services.AddScoped<IToolService, ToolService>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
+builder.Services.AddScoped<UserService>();
 
 builder.Services.AddScoped<IToolRepository, ToolRepository>();
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();

@@ -8,11 +8,13 @@ namespace ToolRental.Services
     {
         private readonly IToolRepository _toolRepository;
         private readonly IReservationRepository _reservationRepository;
-        public ReservationService() { }
+        public ReservationService(IReservationRepository reservationRepository) {
+            _reservationRepository = reservationRepository;
+        }
 
-        public Task<ToolReservation> CheckReservationIntervalAsync(DateTime start, DateTime end)
+        public bool CheckReservationIntervalAsync(DateTime start, DateTime end)
         {
-            throw new NotImplementedException();
+            return _reservationRepository.CheckReservationInterval(start, end);
         }
 
         public Task CreateReservationAsync(ToolReservation toolReservation)

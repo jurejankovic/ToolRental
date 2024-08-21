@@ -12,5 +12,11 @@ namespace ToolRental.ViewModels
         public List<Tool> PagedTools = new List<Tool>();
         public int TotalPages;
         public int CurrentPage;
+
+        public ToolViewModel ChosenTool = new ToolViewModel();
+        public DateTime Start;
+        public DateTime End;        
+        public decimal TotalPrice;
+        public decimal Duration;
     }
 }

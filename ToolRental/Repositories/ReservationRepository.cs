@@ -1,13 +1,29 @@
-﻿using ToolRental.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using ToolRental.Data;
+using ToolRental.Models;
 using ToolRental.Repositories.Interfaces;
 
 namespace ToolRental.Repositories
 {
     public class ReservationRepository : IReservationRepository
     {
-        public Task<ToolReservation> CreateReservation(ToolReservation reservation)
+        private ToolRentalContext _dbContext;
+
+        public ReservationRepository(ToolRentalContext dbContext)
         {
-            throw new NotImplementedException();
+            _dbContext = dbContext;
+        }
+
+        public bool CheckReservationInterval(DateTime start, DateTime end)
+        {
+            return _dbContext.ToolReservation.Where(ri => ri.ReservationStart > start && ri.ReservationEnd < end).Any();
+        }
+
+        public async Task<ToolReservation> CreateReservation(ToolReservation reservation)
+        {
+            await _dbContext.ToolReservation.AddAsync(reservation);
+            _dbContext.SaveChanges();
+            return null;
         }
 
         public Task<ToolReservation> DeleteReservation(int reservationId)

@@ -9,6 +9,6 @@ namespace ToolRental.Services.Interfaces
         Task DeleteReservationByIdAsync(int toolReservationId);
         Task<ToolReservation> GetReservationByIdAsync(int toolReservationId);
         Task<IEnumerable<ToolReservation>> GetAllReservationsAsync();
-        Task<ToolReservation> CheckReservationIntervalAsync(DateTime start, DateTime end);
+        bool CheckReservationIntervalAsync(DateTime start, DateTime end);
     }
 }

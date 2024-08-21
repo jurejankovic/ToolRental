@@ -5,6 +5,7 @@ using ToolRental.ViewModels;
 
 namespace ToolRental.Controllers
 {
+    // TODO: ovo treba pretvoriti u neki pregled rezervacija
     public class ToolOverviewController : Controller
     {
         private readonly IReservationService _reservationService;
@@ -56,6 +57,7 @@ namespace ToolRental.Controllers
             }
             reservationVM.CurrentPage = pageNumber;
             reservationVM.TotalPages = 10;
+
             return View(reservationVM);
         }
 
