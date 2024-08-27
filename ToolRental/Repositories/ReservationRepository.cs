@@ -22,7 +22,7 @@ namespace ToolRental.Repositories
         public async Task<ToolReservation> CreateReservation(ToolReservation reservation)
         {
             await _dbContext.ToolReservation.AddAsync(reservation);
-            _dbContext.SaveChanges();
+            int count = _dbContext.SaveChanges();
             return null;
         }
 

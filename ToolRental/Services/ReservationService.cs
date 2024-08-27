@@ -19,7 +19,7 @@ namespace ToolRental.Services
 
         public Task CreateReservationAsync(ToolReservation toolReservation)
         {
-            throw new NotImplementedException();
+            return _reservationRepository.CreateReservation(toolReservation);
         }
 
         public Task DeleteReservationByIdAsync(int toolReservationId)

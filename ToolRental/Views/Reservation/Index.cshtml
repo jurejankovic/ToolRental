@@ -47,6 +47,14 @@
                 </div>
             </div>
 
+            <input type="hidden" name="ChosenTool.ToolId" id="toolId" />
+            <input type="hidden" name="ChosenTool.ToolName" id="toolName" />
+            <input type="hidden" name="ChosenTool.ToolDesc" id="toolDesc" />
+            <input type="hidden" name="Start" id="start" />
+            <input type="hidden" name="End" id="end" />
+            <input type="hidden" name="Duration" id="duration" />
+            <input type="hidden" name="TotalPrice" id="totalPrice" />
+
             <label for="datetimepickerStart">Datum i vrijeme početka najma</label>
             <input type="datetime-local" id="datetimepickerStart"><br><br>
 
@@ -66,22 +74,22 @@
 
             <div class="row mb-2">
                 <div class="col-md-4">
-                    <label for="duration">Ime alata</label>
-                    <input class="float-end" name="toolName" value="@Model.ChosenTool.Name" disabled />
+                    <label for="toolName">Ime alata</label>
+                    <input class="float-end" name="toolName" value="" disabled />
                 </div>
                 <div class="col-md-4">
-                    <label for="duration">Opis alata</label>
-                    <input class="float-end" name="toolDesc" value="@Model.ChosenTool.Description" disabled />
+                    <label for="toolDesc">Opis alata</label>
+                    <input class="float-end" name="toolDesc" value="" disabled />
                 </div>
             </div>
             <div class="row mb-2">
                 <div class="col-md-4">
                     <label for="duration">Trajanje u satima</label>
-                    <input class="float-end" name="duration" value="@Model.Duration" disabled />
+                    <input asp-for="Duration" class="float-end" value="" disabled />
                 </div>
                 <div class="col-md-4">
                     <label for="price">Cijena najma</label>
-                    <input class="float-end" name="price" value="@Model.ChosenTool.PricePerHour" disabled />
+                    <input asp-for="TotalPrice" class="float-end" value="" disabled />
                 </div>
             </div>
 
@@ -125,7 +133,7 @@
             });
 
             // parametri alata kroz wizard
-            let toolName, toolDesc, dateFrom, dateTo, durationHours, pricePerHour;
+            let toolId, toolName, toolDesc, dateFrom, dateTo, durationHours, pricePerHour, price;
 
 
             $('.select2').select2({
@@ -157,18 +165,25 @@
                 }
             }).on('select2:select', function (e) {
                 var selectedData = e.params.data;
+                toolId = selectedData.id;
                 toolName = selectedData.text;
                 pricePerHour = selectedData.pricePerHour;
                 $('textarea[name="toolDesc"]').val(selectedData.desc);
+
+                $('#toolId').val(toolId);
+                $('#toolName').val(toolName);
+                $('#toolDesc').val(selectedData.desc);
             });;
 
 
-            // update
             function updateValues() {
                 toolDesc = $('textarea[name="toolDesc"]').val();
 
                 if (toolName) $('input[name="toolName"]').val(toolName);
                 if (toolDesc) $('input[name="toolDesc"]').val(toolDesc);
+
+                $('#toolName').val(toolName);
+                $('#toolDesc').val(toolDesc);
 
                 calculateDuration();
 
@@ -185,31 +200,37 @@
                     const momentDateFrom = moment(dateFrom);
                     const momentDateTo = moment(dateTo);
 
-                    let duration = moment.duration(momentDateTo.diff(momentDateFrom));
+                    duration = moment.duration(momentDateTo.diff(momentDateFrom));
                     if (duration < 0) {
                         alert("Uneseni datumi nisu validni!");
                     }
                     else {
                         durationHours = Math.floor(duration.asHours());
-                        $('input[name="duration"]').val(durationHours);
+                        $('input[name="Duration"]').val(durationHours);
+                        $('#duration').val(durationHours);
                     }
                     
                 }
             }
 
             function calculatePrice() {
-                let price = durationHours * pricePerHour;
-                $('input[name="price"]').val(price);
+                price = durationHours * pricePerHour;
+                $('input[name="TotalPrice"]').val(price);
+                $('#totalPrice').val(price);
             }
 
             $('#datetimepickerStart').on('change', (e) => {
                 dateFrom = new Date(e.target.value);
                 console.log("dateFrom: ", dateFrom);
+
+                $('#start').val(dateFrom.toISOString());
             });
 
             $('#datetimepickerEnd').on('change', (e) => {
                 dateTo = new Date(e.target.value);
                 console.log("dateTo: ", dateTo);
+
+                $('#end').val(dateTo.toISOString());
             });
 
             $('#form-tool-reservation').on('submit', function (e) {
@@ -222,11 +243,15 @@
                     // ako je forma validna prebaci na idući korak
                     let isValid = $('#form-tool-reservation').valid();
                     if (isValid) {
-                                    let currentSection = buttonClicked.closest(".row");
-                                    let nextSection = currentSection.next(".row");
-                                    currentSection.hide();
-                                    nextSection.show();
-                                }
+                        let currentSection = buttonClicked.closest(".row");
+                        let nextSection = currentSection.next(".row");
+                        currentSection.hide();
+                        nextSection.show();
+                    }
+                }
+                else {
+                    $('input[name="TotalPrice"]').val(price);
+                    $('input[name="Duration"]').val(durationHours);
                 }
             });
         });
