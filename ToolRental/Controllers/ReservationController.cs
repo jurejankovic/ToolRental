@@ -81,13 +81,5 @@ namespace ToolRental.Controllers
 
             return RedirectToAction("Index", "Home");
         }
-
-        public JsonResult GetToolDropdownData(string searchString)
-        {
-            var pagedTools = _toolService.GetAllToolsForDropDown(searchString, 50);
-            var data = pagedTools.ToList();
-
-            return Json(data);
-        }
     }
 }

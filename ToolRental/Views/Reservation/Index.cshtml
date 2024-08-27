@@ -15,13 +15,13 @@
 
             <div class="row mb-2">
                 <div class="col-md-8">
-                    @Html.DropDownListFor(modelItem => modelItem.Tools, Model.ToolsSelectItems, "Izabrati alat", new { @id = "toolDropDown", @class = "select2 col-md-8", @name = "tools" })
+                    @Html.DropDownListFor(modelItem => modelItem.Tools, Model.ToolsSelectItems, new { @id = "toolDropDown", @class = "select2 col-md-8", @name = "tools" })
                     <div class="invalid-feedback">Izaberite alat za nastavak</div>
                 </div>
             </div>
             <div class="row mb-2">
                 <div class="col-md-8">
-                    <input class="col-md-8" name="toolDesc" value="@Model.ChosenTool.Description" disabled />
+                    <textarea class="col-md-8" name="toolDesc" value="" rows="3" style="resize:none" disabled></textarea>
                 </div>
             </div>
 
@@ -145,6 +145,8 @@
 
                 if ($(this).attr("name") === "nextStep") {
                     let nextSection = currentSection.next(".row");
+                    // spremaju se parametri
+                    updateValues();
                     currentSection.hide();
                     nextSection.show();
                 } else if ($(this).attr("name") === "prevStep") {
@@ -154,12 +156,16 @@
                 }
             });
 
+            // parametri alata kroz wizard
+            let toolName, toolDesc, dateFrom, dateTo;
+
+
             $('.select2').select2({
                 placeholder: "Izaberite alat",
                 allowClear: true,
                 minimumInputLength: 3,
                 ajax: {
-                    url: 'api/Reservations/GetToolDropdownData',
+                    url: 'api/ReservationsApi/GetToolDropdownData',
                     dataType: 'json',
                     delay: 250,
                     data: function (params) {
@@ -171,22 +177,60 @@
                         return {
                             results: $.map(data, function (item) {
                                 return {
-                                    id: item.id,
-                                    text: item.text
+                                    id: item.value,
+                                    text: item.text,
+                                    desc: item.desc
                                 };
                             })
                         };
                     },
                     cache: true
                 }
-            });
+            }).on('select2:select', function (e) {
+                var selectedData = e.params.data;
+                toolName = selectedData.text
+                $('textarea[name="toolDesc"]').val(selectedData.desc);
+            });;
+
+
+            // update
+            function updateValues() {
+                toolDesc = $('textarea[name="toolDesc"]').val();
+
+                if (toolName) $('input[name="toolName"]').val(toolName);
+                if (toolDesc) $('input[name="toolDesc"]').val(toolDesc);
+
+                calculateDuration();
+
+                //calculatePrice();
+                
+                console.log("toolName:", toolName);
+                console.log("toolDesc:", toolDesc);
+                console.log("dateFrom:", dateFrom);
+                console.log("dateTo:", dateTo);
+            }
+
+            function calculateDuration() {
+                if (dateFrom && dateTo) {
+                    let duration = moment.duration(dateTo.diff(dateFrom));
+                    $('input[name="duration"]').val(duration);
+                }
+            }
+
+            function calculatePrice() {
+                let price = duration * pricePerHour;
+                $('input[name="price"]').val(price);
+            }
 
             new tempusDominus.TempusDominus(document.getElementById('datetimepickerStart'), {
                 localization: {
                     startOfTheWeek: 1,
-                    format: 'yyyy-MM-dd HH:mm',
+                    format: 'dd.MM.yyyy. HH:mm',
                     hourCycle: 'h24'
                 }
+            }).on('change.datetimepicker', function (e) {
+                dateFrom = e.date; 
+                console.log("datetimeStart: ", dateFrom);
             });
 
             new tempusDominus.TempusDominus(document.getElementById('datetimepickerEnd'), {
@@ -195,7 +239,11 @@
                     format: 'yyyy-MM-dd HH:mm',
                     hourCycle: 'h24'
                 }
+            }).on('change.datetimepicker', function (e) {
+                dateTo = e.date;
+                console.log("datetimeEnd: ", dateTo);
             });
+
 
             $('#form-tool-reservation').on('submit', function (e) {
                 const buttonClicked = $(document.activeElement);

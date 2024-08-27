@@ -5,11 +5,11 @@ namespace ToolRental.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ReservationsController : ControllerBase
+    public class ReservationsApiController : ControllerBase
     {
         private readonly IReservationService _reservationService;
         private readonly IToolService _toolService;
-        public ReservationsController(IReservationService reservationService, IToolService toolService)
+        public ReservationsApiController(IReservationService reservationService, IToolService toolService)
         {
             _reservationService = reservationService;
             _toolService = toolService;
