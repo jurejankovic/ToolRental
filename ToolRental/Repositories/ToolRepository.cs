@@ -24,7 +24,13 @@ namespace ToolRental.Repositories
         public IEnumerable<dynamic> GetAllToolsForDropDown(string searchString, int pageSize)
         {
             return _dbContext.Tool.Where(item => item.Name.ToLower().Contains(searchString.ToLower()))
-                .Select(item => new { Value = item.Id, Text = item.Name, Desc = item.Description })
+                .Select(item => new
+                {
+                    Value = item.Id,
+                    Text = item.Name,
+                    Desc = item.Description,
+                    PricePerHour = item.PricePerHour
+                })
                 .Take(pageSize)
                 .ToList();
         }

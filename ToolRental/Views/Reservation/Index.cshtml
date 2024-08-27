@@ -47,43 +47,11 @@
                 </div>
             </div>
 
-            <div class="row mb-2">
-                <div class="col-md-4">
-                    <label for="datetimepickerStartInput" class="form-label">Datum i vrijeme početka najma</label>
-                    <div class="input-group log-event"
-                         id="datetimepickerStart"
-                         data-td-target-input="nearest"
-                         data-td-target-toggle="nearest">
-                        <input id="datetimepickerStartInput"
-                               type="text"
-                               class="form-control"
-                               data-td-target="#datetimepickerStart" />
-                        <span class="input-group-text"
-                              data-td-target="#datetimepickerStart"
-                              data-td-toggle="datetimepicker">
-                            <i class="bi bi-calendar3"></i>
-                        </span>
-                    </div>
-                </div>
+            <label for="datetimepickerStart">Datum i vrijeme početka najma</label>
+            <input type="datetime-local" id="datetimepickerStart"><br><br>
 
-                <div class="col-md-4">
-                    <label for="datetimepickerEndInput" class="form-label">Datum i vrijeme kraja najma</label>
-                    <div class="input-group log-event"
-                         id="datetimepickerEnd"
-                         data-td-target-input="nearest"
-                         data-td-target-toggle="nearest">
-                        <input id="datetimepickerEndInput"
-                               type="datetime"
-                               class="form-control"
-                               data-td-target="#datetimepickerEnd" />
-                        <span class="input-group-text"
-                              data-td-target="#datetimepickerEnd"
-                              data-td-toggle="datetimepicker">
-                            <i class="bi bi-calendar3"></i>
-                        </span>
-                    </div>
-                </div>
-            </div>
+            <label for="datetimepickerEnd">Datum i vrijeme kraja najma</label>
+            <input type="datetime-local" id="datetimepickerEnd"><br><br>
 
             <div class="col-md-8 mt-5">
                 <button class="btn btn-primary float-start" name="prevStep">Prethodni korak</button>
@@ -157,7 +125,7 @@
             });
 
             // parametri alata kroz wizard
-            let toolName, toolDesc, dateFrom, dateTo;
+            let toolName, toolDesc, dateFrom, dateTo, durationHours, pricePerHour;
 
 
             $('.select2').select2({
@@ -179,7 +147,8 @@
                                 return {
                                     id: item.value,
                                     text: item.text,
-                                    desc: item.desc
+                                    desc: item.desc,
+                                    pricePerHour: item.pricePerHour
                                 };
                             })
                         };
@@ -188,7 +157,8 @@
                 }
             }).on('select2:select', function (e) {
                 var selectedData = e.params.data;
-                toolName = selectedData.text
+                toolName = selectedData.text;
+                pricePerHour = selectedData.pricePerHour;
                 $('textarea[name="toolDesc"]').val(selectedData.desc);
             });;
 
@@ -202,7 +172,7 @@
 
                 calculateDuration();
 
-                //calculatePrice();
+                calculatePrice();
                 
                 console.log("toolName:", toolName);
                 console.log("toolDesc:", toolDesc);
@@ -212,38 +182,35 @@
 
             function calculateDuration() {
                 if (dateFrom && dateTo) {
-                    let duration = moment.duration(dateTo.diff(dateFrom));
-                    $('input[name="duration"]').val(duration);
+                    const momentDateFrom = moment(dateFrom);
+                    const momentDateTo = moment(dateTo);
+
+                    let duration = moment.duration(momentDateTo.diff(momentDateFrom));
+                    if (duration < 0) {
+                        alert("Uneseni datumi nisu validni!");
+                    }
+                    else {
+                        durationHours = Math.floor(duration.asHours());
+                        $('input[name="duration"]').val(durationHours);
+                    }
+                    
                 }
             }
 
             function calculatePrice() {
-                let price = duration * pricePerHour;
+                let price = durationHours * pricePerHour;
                 $('input[name="price"]').val(price);
             }
 
-            new tempusDominus.TempusDominus(document.getElementById('datetimepickerStart'), {
-                localization: {
-                    startOfTheWeek: 1,
-                    format: 'dd.MM.yyyy. HH:mm',
-                    hourCycle: 'h24'
-                }
-            }).on('change.datetimepicker', function (e) {
-                dateFrom = e.date; 
-                console.log("datetimeStart: ", dateFrom);
+            $('#datetimepickerStart').on('change', (e) => {
+                dateFrom = new Date(e.target.value);
+                console.log("dateFrom: ", dateFrom);
             });
 
-            new tempusDominus.TempusDominus(document.getElementById('datetimepickerEnd'), {
-                localization: {
-                    startOfTheWeek: 1,
-                    format: 'yyyy-MM-dd HH:mm',
-                    hourCycle: 'h24'
-                }
-            }).on('change.datetimepicker', function (e) {
-                dateTo = e.date;
-                console.log("datetimeEnd: ", dateTo);
+            $('#datetimepickerEnd').on('change', (e) => {
+                dateTo = new Date(e.target.value);
+                console.log("dateTo: ", dateTo);
             });
-
 
             $('#form-tool-reservation').on('submit', function (e) {
                 const buttonClicked = $(document.activeElement);
