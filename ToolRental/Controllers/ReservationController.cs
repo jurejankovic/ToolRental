@@ -64,22 +64,40 @@ namespace ToolRental.Controllers
             {
                 var toolReservation = new ToolReservation()
                 {
-                    RentedTool = reservationVM.ChosenTool.ToModel(),
+                    RentedTool = await _toolService.GetToolByIdAsync(reservationVM.SelectedToolId),
                     ReservationStart = start,
                     ReservationEnd = end,
                     // trebalo bi vratiti trenutno ulogiranog korisnika kao osobu koja unajmljuje alat
                     ToolRenter = await _userService.GetCurentRenter()
                 };
 
-                // spremanje rezervacije
-                _reservationService.CreateReservationAsync(toolReservation);
+                // pokušaj spremanja rezervacije
+                if (await _reservationService.CreateReservationAsync(toolReservation))
+                {
+                    // uspješno spremanje
+                    return RedirectToAction("Success");
+                }
+                else
+                {
+                    // greška pri spremanju
+                    return RedirectToAction("Error");
+                }
             }
             else
             {
                 throw new Exception();
             }
 
-            return RedirectToAction("Index", "Home");
         }
+
+        public async Task<IActionResult> Success()
+        {
+            return View();
+        }
+        public async Task<IActionResult> Error()
+        {
+            return View();
+        }
+
     }
 }

@@ -4,7 +4,7 @@ namespace ToolRental.Repositories.Interfaces
 {
     public interface IReservationRepository
     {
-        Task<ToolReservation> CreateReservation(ToolReservation reservation);
+        Task<int> CreateReservation(ToolReservation reservation);
         Task<ToolReservation> UpdateReservation(ToolReservation reservation);
         Task<ToolReservation> DeleteReservation(int reservationId);
         Task<ToolReservation> GetReservationById(int eservationId);

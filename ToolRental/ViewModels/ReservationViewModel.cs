@@ -14,9 +14,11 @@ namespace ToolRental.ViewModels
         public int CurrentPage;
 
         public ToolViewModel ChosenTool = new ToolViewModel();
-        public DateTime Start;
-        public DateTime End;        
-        public decimal TotalPrice;
-        public decimal Duration;
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }      
+        public decimal TotalPrice { get; set; }
+        public decimal Duration { get; set; }
+
+        public int SelectedToolId { get; set; }
     }
 }

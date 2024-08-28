@@ -47,19 +47,22 @@
                 </div>
             </div>
 
-            <input type="hidden" name="ChosenTool.ToolId" id="toolId" />
-            <input type="hidden" name="ChosenTool.ToolName" id="toolName" />
-            <input type="hidden" name="ChosenTool.ToolDesc" id="toolDesc" />
-            <input type="hidden" name="Start" id="start" />
-            <input type="hidden" name="End" id="end" />
-            <input type="hidden" name="Duration" id="duration" />
-            <input type="hidden" name="TotalPrice" id="totalPrice" />
+            <input type="hidden" asp-for="SelectedToolId" id="toolId" />
+            <input type="hidden" asp-for="Start" id="start" />
+            <input type="hidden" asp-for="End" id="end" />
+            <input type="hidden" asp-for="Duration" id="duration" />
+            <input type="hidden" asp-for="TotalPrice" id="totalPrice" />
 
-            <label for="datetimepickerStart">Datum i vrijeme početka najma</label>
-            <input type="datetime-local" id="datetimepickerStart"><br><br>
-
-            <label for="datetimepickerEnd">Datum i vrijeme kraja najma</label>
-            <input type="datetime-local" id="datetimepickerEnd"><br><br>
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <label for="datetimepickerStart">Datum i vrijeme početka najma</label>
+                    <input type="datetime-local" id="datetimepickerStart"><br><br>
+                </div>
+                <div class="col-md-4">
+                    <label for="datetimepickerEnd">Datum i vrijeme kraja najma</label>
+                    <input type="datetime-local" id="datetimepickerEnd"><br><br>
+                </div>
+            </div>
 
             <div class="col-md-8 mt-5">
                 <button class="btn btn-primary float-start" name="prevStep">Prethodni korak</button>
@@ -169,10 +172,6 @@
                 toolName = selectedData.text;
                 pricePerHour = selectedData.pricePerHour;
                 $('textarea[name="toolDesc"]').val(selectedData.desc);
-
-                $('#toolId').val(toolId);
-                $('#toolName').val(toolName);
-                $('#toolDesc').val(selectedData.desc);
             });;
 
 
@@ -182,13 +181,18 @@
                 if (toolName) $('input[name="toolName"]').val(toolName);
                 if (toolDesc) $('input[name="toolDesc"]').val(toolDesc);
 
+                $('#toolId').val(toolId);
                 $('#toolName').val(toolName);
                 $('#toolDesc').val(toolDesc);
+
+                if (dateFrom) $('#start').val(dateFrom.toISOString());
+                if (dateTo) $('#end').val(dateTo.toISOString());
 
                 calculateDuration();
 
                 calculatePrice();
-                
+
+                console.log("toolId:", toolId);
                 console.log("toolName:", toolName);
                 console.log("toolDesc:", toolDesc);
                 console.log("dateFrom:", dateFrom);
@@ -209,7 +213,7 @@
                         $('input[name="Duration"]').val(durationHours);
                         $('#duration').val(durationHours);
                     }
-                    
+
                 }
             }
 
@@ -250,8 +254,10 @@
                     }
                 }
                 else {
-                    $('input[name="TotalPrice"]').val(price);
-                    $('input[name="Duration"]').val(durationHours);
+                    // kod submita treba maknuti disabled inače se ne pošalje
+                    $("input").removeAttr("disabled");
+                    // ažuriranje parametara prije submita
+                    updateValues();
                 }
             });
         });

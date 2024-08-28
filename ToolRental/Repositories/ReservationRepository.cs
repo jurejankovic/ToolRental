@@ -19,11 +19,11 @@ namespace ToolRental.Repositories
             return _dbContext.ToolReservation.Where(ri => ri.ReservationStart > start && ri.ReservationEnd < end).Any();
         }
 
-        public async Task<ToolReservation> CreateReservation(ToolReservation reservation)
+        public async Task<int> CreateReservation(ToolReservation reservation)
         {
             await _dbContext.ToolReservation.AddAsync(reservation);
             int count = _dbContext.SaveChanges();
-            return null;
+            return count;
         }
 
         public Task<ToolReservation> DeleteReservation(int reservationId)
