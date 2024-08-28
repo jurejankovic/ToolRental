@@ -12,9 +12,9 @@ namespace ToolRental.Services
             _reservationRepository = reservationRepository;
         }
 
-        public bool CheckReservationIntervalAsync(DateTime start, DateTime end)
+        public bool CheckReservationIntervalAsync(DateTime start, DateTime end, int toolId)
         {
-            return _reservationRepository.CheckReservationInterval(start, end);
+            return _reservationRepository.CheckReservationInterval(start, end, toolId);
         }
 
         public async Task<bool> CreateReservationAsync(ToolReservation toolReservation)

@@ -9,6 +9,6 @@ namespace ToolRental.Repositories.Interfaces
         Task<ToolReservation> DeleteReservation(int reservationId);
         Task<ToolReservation> GetReservationById(int eservationId);
         Task<IEnumerable<ToolReservation>> GetAllReservations();
-        bool CheckReservationInterval(DateTime start, DateTime end);
+        bool CheckReservationInterval(DateTime start, DateTime end, int toolId);
     }
 }

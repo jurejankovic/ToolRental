@@ -14,9 +14,11 @@ namespace ToolRental.Repositories
             _dbContext = dbContext;
         }
 
-        public bool CheckReservationInterval(DateTime start, DateTime end)
+        public bool CheckReservationInterval(DateTime start, DateTime end, int toolId)
         {
-            return _dbContext.ToolReservation.Where(ri => ri.ReservationStart > start && ri.ReservationEnd < end).Any();
+            return _dbContext.ToolReservation
+                .Where(t => t.RentedTool.Id == toolId)
+                .Any(ri => ri.ReservationStart < end && ri.ReservationEnd > start);
         }
 
         public async Task<int> CreateReservation(ToolReservation reservation)

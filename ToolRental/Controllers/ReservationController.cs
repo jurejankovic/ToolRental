@@ -60,11 +60,13 @@ namespace ToolRental.Controllers
             // provjera termina rezervacije
             DateTime start = reservationVM.Start;
             DateTime end = reservationVM.End;
-            if (_reservationService.CheckReservationIntervalAsync(start, end))
+            int seletedToolId = reservationVM.SelectedToolId;
+
+            if (!_reservationService.CheckReservationIntervalAsync(start, end, seletedToolId))
             {
                 var toolReservation = new ToolReservation()
                 {
-                    RentedTool = await _toolService.GetToolByIdAsync(reservationVM.SelectedToolId),
+                    RentedTool = await _toolService.GetToolByIdAsync(seletedToolId),
                     ReservationStart = start,
                     ReservationEnd = end,
                     // trebalo bi vratiti trenutno ulogiranog korisnika kao osobu koja unajmljuje alat
@@ -85,7 +87,7 @@ namespace ToolRental.Controllers
             }
             else
             {
-                throw new Exception();
+                return RedirectToAction("Error");
             }
 
         }
